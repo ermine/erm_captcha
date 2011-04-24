@@ -1,0 +1,19 @@
+true: debug
+# OASIS_START
+# DO NOT EDIT (digest: 274a80b796ce9fd24ada35a261294033)
+# Library freetype2
+<*.ml{,i}>: oasis_library_freetype2_ccopt
+"freetype2_stub.c": oasis_library_freetype2_ccopt
+<freetype2.{cma,cmxa}>: oasis_library_freetype2_cclib
+"libfreetype2.lib": oasis_library_freetype2_cclib
+"dllfreetype2.dll": oasis_library_freetype2_cclib
+"libfreetype2.a": oasis_library_freetype2_cclib
+"dllfreetype2.so": oasis_library_freetype2_cclib
+<freetype2.{cma,cmxa}>: use_libfreetype2
+# Executable captcha_stdout
+<captcha_stdout.{native,byte}>: use_freetype2
+<captcha_stdout.{native,byte}>: pkg_camlimages.png
+<*.ml{,i}>: use_freetype2
+<*.ml{,i}>: pkg_camlimages.png
+<captcha_stdout.{native,byte}>: custom
+# OASIS_STOP
