@@ -461,9 +461,9 @@ let package_default =
                  S
                    [
                       A "-ccopt";
-                      A "-I/usr/local/include";
+                      A "-I/usr/include";
                       A "-ccopt";
-                      A "-I/usr/local/include/freetype2";
+                      A "-I/usr/include/freetype2";
                       A "-ccopt";
                       A "-O0";
                       A "-ccopt";
@@ -478,7 +478,7 @@ let package_default =
                       A "-cclib";
                       A "-lfreetype";
                       A "-cclib";
-                      A "-L/usr/local/lib"
+                      A "-L/usr/l/lib"
                    ])
             ]);
           (["oasis_library_freetype2_cclib"; "ocamlmklib"; "c"],
