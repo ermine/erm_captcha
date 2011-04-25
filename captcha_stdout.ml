@@ -157,12 +157,13 @@ let draw_string img width height str =
   in
     loop start_x bmps;
 
+    draw_black_wave img start_x string_length string_height;
+
     draw_white_wave img start_x (image_height / 2) string_length string_height;
     draw_white_wave img start_x  (image_height / 3) string_length string_height;
     draw_white_wave img start_x (2 * image_height / 3)
-      string_length string_height;
+      string_length string_height
     
-    draw_black_wave img start_x string_length string_height
 
 let generate_image face string =
   String.iter (fun c ->
