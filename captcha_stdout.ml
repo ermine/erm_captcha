@@ -180,7 +180,7 @@ let generate_image face string =
 
 let _ =
   let font = Sys.argv.(1)
-  and string = Sys.argv.(2) in
+  and string = Sys.argv.(1) in
   let ft_library = init () in
   let face = new_face ft_library font 0 in
     set_char_size face font_hor_size font_vert_size font_hres font_vres;
