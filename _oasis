@@ -7,6 +7,7 @@ License:     BSD3
 LicenseFile: LICENCE
 Plugins:     DevFiles (0.2), META (0.2)
 BuildTools:  ocamlbuild
+PostConfCommand: ocaml unix.cma postconfig.ml
 
 Synopsis:    CAPTCHA Image Generator
 
@@ -14,8 +15,7 @@ Library freetype2
   Path:       .
   Modules:    Freetype2
   CSources:   freetype2_stub.c
-  CClib:      -lfreetype -L/usr/local/lib
-  CCopt:     -I/usr/local/include -I/usr/local/include/freetype2 -O0 -ggdb
+  # CCopt:     -O0 -ggdb
 
 Executable captcha_stdout
   Path:		.

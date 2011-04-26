@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 729a1e3dec06ca968b754655ea0a0455) *)
+(* DO NOT EDIT (digest: f616ab2408d51dac2bec279dc6de7cdc) *)
 module OASISGettext = struct
 # 21 "/usr/home/ermine/projects/ocaml/src/oasis/src/oasis/OASISGettext.ml"
   
@@ -453,42 +453,79 @@ let package_default =
   {
      MyOCamlbuildBase.lib_ocaml = [("freetype2", [])];
      lib_c = [("freetype2", ".", [])];
-     flags =
-       [
-          (["oasis_library_freetype2_ccopt"; "compile"],
-            [
-               (OASISExpr.EBool true,
-                 S
-                   [
-                      A "-ccopt";
-                      A "-I/usr/include";
-                      A "-ccopt";
-                      A "-I/usr/include/freetype2";
-                      A "-ccopt";
-                      A "-O0";
-                      A "-ccopt";
-                      A "-ggdb"
-                   ])
-            ]);
-          (["oasis_library_freetype2_cclib"; "link"],
-            [
-               (OASISExpr.EBool true,
-                 S
-                   [
-                      A "-cclib";
-                      A "-lfreetype";
-                      A "-cclib";
-                      A "-L/usr/l/lib"
-                   ])
-            ]);
-          (["oasis_library_freetype2_cclib"; "ocamlmklib"; "c"],
-            [(OASISExpr.EBool true, S [A "-lfreetype"; A "-L/usr/local/lib"])
-            ])
-       ];
+     flags = [];
      }
   ;;
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default package_default;;
 
 (* OASIS_STOP *)
-Ocamlbuild_plugin.dispatch dispatch_default;;
+
+
+open Ocamlbuild_plugin;;
+open MyOCamlbuildBase;;
+open BaseEnvLight;;
+
+let my_dispatch = 
+  let env = 
+    BaseEnvLight.load 
+      ~filename:env_filename 
+      ~allow_empty:true
+      ()
+  in
+
+  let var_get name =
+    try MapString.find name env
+    with Not_found -> ""
+  in
+
+  let split s ch =
+    let x = 
+      ref [] 
+    in
+    let rec go s =
+      let pos = 
+        try Some (String.index s ch)
+        with Not_found -> None
+      in
+        match pos with
+          | Some pos  ->
+              x := (String.before s pos)::!x;
+              go (String.after s (pos + 1))
+          | None ->
+              List.find_all ((<>) "") (s::!x)
+    in
+      go s;
+  in
+
+  let make_binding_additional_flags name =
+    let pkg_name_cflags = "pkg_" ^ name ^ "_cflags"
+    and pkg_name_lflags = "pkg_" ^ name ^ "_lflags" in
+    let cflags = split (var_get pkg_name_cflags) ' ' in
+    let lflags = split (var_get pkg_name_lflags) ' ' in
+      if cflags <> [] then
+        flag ["c"; "compile"; pkg_name_cflags] &
+          S(List.map (fun path -> S[A"-ccopt"; A path]) cflags);
+      if lflags <> []  then (
+        flag ["ocamlmklib"; "c"; pkg_name_lflags] &
+          S(List.map (fun path -> A path) lflags);
+        flag [pkg_name_lflags; "ocaml"; "library"; "link"] &
+          S(List.map (fun path -> S[A"-cclib"; A path]) lflags);
+      )
+
+  in          
+    
+    MyOCamlbuildBase.dispatch_combine 
+      [
+        MyOCamlbuildBase.dispatch package_default;
+        MyOCamlbuildFindlib.dispatch;
+        begin function
+          | After_rules ->
+            make_binding_additional_flags "freetype2";
+
+          | _ -> ()
+        end;
+      ]
+in
+  Ocamlbuild_plugin.dispatch my_dispatch;;
+

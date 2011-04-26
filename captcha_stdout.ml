@@ -179,10 +179,10 @@ let generate_image face string =
 
 
 let _ =
-  let font = Sys.argv.(1)
+  let font = Captcha_font.font
   and string = Sys.argv.(1) in
   let ft_library = init () in
-  let face = new_face ft_library font 0 in
+  let face = new_memory_face ft_library font 0 in
     set_char_size face font_hor_size font_vert_size font_hres font_vres;
     (* set_pixel_sizes face 40 40; *)
 
