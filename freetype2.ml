@@ -30,6 +30,8 @@ external freetype_done : library -> unit
   = "ml_done_freetype"
 external new_face : library -> string -> int -> face
   = "ml_new_face"
+external new_memory_face : library -> string -> int -> face
+  = "ml_new_memory_face"
 external face_done : face -> unit
   = "ml_done_face"
 external get_char_index : face -> int -> int

@@ -40,6 +40,8 @@ CAMLprim value ml_done_freetype(value library) {
   if (error)
     failwith("FT_Done_Freetype");
 
+  caml_stat_free(Library_val(library));
+
   CAMLreturn(Val_unit);
 }
 
@@ -51,9 +53,28 @@ CAMLprim value ml_new_face(value vlibrary, value vpath, value vface_idx) {
   
   error = FT_New_Face(*Library_val(vlibrary),
                       String_val(vpath),
-                      Int_val(vface_idx), face);
+                      Long_val(vface_idx), face);
   if(error)
     failwith("cannot new face");
+
+  vres = caml_alloc_small(1, Abstract_tag);
+  Face_val(vres) = face;
+  CAMLreturn(vres);
+}
+
+CAMLprim value ml_new_memory_face(value library, value filebase, 
+                                  value face_index) {
+  CAMLparam3(library, filebase, face_index);
+  CAMLlocal1(vres);
+
+  FT_Face *face = caml_stat_alloc(sizeof(FT_Face));
+  int error;
+
+  error = FT_New_Memory_Face(*Library_val(library), Bp_val(filebase), 
+                             caml_string_length(filebase),
+                             Long_val(face_index), face);
+  if(error)
+    failwith("FT_New_Memory_Face");
 
   vres = caml_alloc_small(1, Abstract_tag);
   Face_val(vres) = face;
@@ -66,6 +87,8 @@ CAMLprim value ml_done_face(value face) {
   int error = FT_Done_Face(*Face_val(face));
   if(error)
     failwith("FT_Done_Face");
+
+  caml_stat_free(Face_val(face));
 
   CAMLreturn(Val_unit);
 }
@@ -261,7 +284,10 @@ CAMLprim value ml_glyph_to_bitmap(value glyph, value render_mode, value origin,
 
 CAMLprim value ml_done_glyph(value glyph) {
   CAMLparam1(glyph);
+  
   FT_Done_Glyph(*Glyph_val(glyph));
+  caml_stat_free(Glyph_val(glyph));
+
   CAMLreturn(Val_unit);
 }
       
