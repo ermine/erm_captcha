@@ -1,9 +1,10 @@
 # OASIS_START
-# DO NOT EDIT (digest: 75aa548e1e330ab26ef7fdd862dfc901)
+# DO NOT EDIT (digest: e88d5c1861f3e5d7ed3c82a1485b814f)
 version = "0.1"
 description = "CAPTCHA Image Generator"
-archive(byte) = "freetype2.cma"
-archive(native) = "freetype2.cmxa"
-exists_if = "freetype2.cma"
+requires = "camlimages"
+archive(byte) = "captcha.cma"
+archive(native) = "captcha.cmxa"
+exists_if = "captcha.cma"
 # OASIS_STOP
 

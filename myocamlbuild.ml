@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: f616ab2408d51dac2bec279dc6de7cdc) *)
+(* DO NOT EDIT (digest: 59021e3a9ba223b31546178f29b95a29) *)
 module OASISGettext = struct
 # 21 "/usr/home/ermine/projects/ocaml/src/oasis/src/oasis/OASISGettext.ml"
   
@@ -451,8 +451,8 @@ end
 open Ocamlbuild_plugin;;
 let package_default =
   {
-     MyOCamlbuildBase.lib_ocaml = [("freetype2", [])];
-     lib_c = [("freetype2", ".", [])];
+     MyOCamlbuildBase.lib_ocaml = [("captcha", [])];
+     lib_c = [("captcha", ".", [])];
      flags = [];
      }
   ;;
