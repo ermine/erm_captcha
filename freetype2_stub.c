@@ -14,7 +14,7 @@
 #define Library_val(v)            (*((FT_Library **) &Field(v, 0)))
 #define Face_val(v)               (*((FT_Face **) &Field(v, 0)))
 #define Glyph_val(v)              (*((FT_Glyph **) &Field(v, 0)))
-#define Bitmap_val(v)             (*((FT_Bitmap **) &Field(v, 0)))
+#define BitmapGlyph_val(v)        (*((FT_BitmapGlyph **) &Field(v, 0)))
 
 CAMLprim value ml_init_freetype(value unit) {
   CAMLparam0();
@@ -40,7 +40,7 @@ CAMLprim value ml_done_freetype(value library) {
   if (error)
     failwith("FT_Done_Freetype");
 
-  caml_stat_free(Library_val(library));
+  caml_stat_free((void*) Library_val(library));
 
   CAMLreturn(Val_unit);
 }
@@ -70,7 +70,8 @@ CAMLprim value ml_new_memory_face(value library, value filebase,
   FT_Face *face = caml_stat_alloc(sizeof(FT_Face));
   int error;
 
-  error = FT_New_Memory_Face(*Library_val(library), Bp_val(filebase), 
+  error = FT_New_Memory_Face(*Library_val(library), 
+                             (const FT_Byte*) Bp_val(filebase), 
                              caml_string_length(filebase),
                              Long_val(face_index), face);
   if(error)
@@ -88,7 +89,7 @@ CAMLprim value ml_done_face(value face) {
   if(error)
     failwith("FT_Done_Face");
 
-  caml_stat_free(Face_val(face));
+  caml_stat_free((void*) Face_val(face));
 
   CAMLreturn(Val_unit);
 }
@@ -240,7 +241,7 @@ CAMLprim value ml_glyph_to_bitmap(value glyph, value render_mode, value origin,
                                   value destroy) {
   CAMLparam4(glyph, render_mode, origin, destroy);
   CAMLlocal3(vres, vbitmap, vadvance);
-  FT_Glyph image = *Glyph_val(glyph);
+  FT_Glyph *image = caml_stat_alloc(sizeof(FT_Glyph));
   FT_Vector vec;
   int error, mode;
 
@@ -257,14 +258,16 @@ CAMLprim value ml_glyph_to_bitmap(value glyph, value render_mode, value origin,
   vec.x = (FT_Fixed)(Int_val(Field(origin,0)));
   vec.y = (FT_Fixed)(Int_val(Field(origin,1)));
 
-  error = FT_Glyph_To_Bitmap(&image, mode, &vec, Bool_val(destroy));
+  bcopy(Glyph_val(glyph), image, sizeof(FT_Glyph));
+
+  error = FT_Glyph_To_Bitmap(image, mode, &vec, Bool_val(destroy));
   if(error)
     failwith("FT_Glyph_To_Bitmap");
   else {
-    FT_BitmapGlyph bit = (FT_BitmapGlyph)image;
+    FT_BitmapGlyph bit = (FT_BitmapGlyph) (*image);
 
     vbitmap = caml_alloc_small(1, Abstract_tag);
-    Bitmap_val(vbitmap) = &(bit->bitmap);
+    Glyph_val(vbitmap) = image;
 
     vadvance = caml_alloc_tuple(2);
     Store_field(vadvance, 0, Val_long(bit->root.advance.x));
@@ -285,12 +288,12 @@ CAMLprim value ml_glyph_to_bitmap(value glyph, value render_mode, value origin,
 CAMLprim value ml_done_glyph(value glyph) {
   CAMLparam1(glyph);
   
-  FT_Done_Glyph(*Glyph_val(glyph));
-  caml_stat_free(Glyph_val(glyph));
+  FT_Done_Glyph(* Glyph_val(glyph));
+  caml_stat_free((void*) Glyph_val(glyph));
 
   CAMLreturn(Val_unit);
 }
-      
+
 CAMLprim value ml_glyph_get_cbox(value glyph, value bbox_mode) {
   CAMLparam2(glyph, bbox_mode);
   CAMLlocal1(vres);
@@ -320,7 +323,11 @@ CAMLprim value ml_read_bitmap(value vbitmap, value vx, value vy) {
   CAMLparam3(vbitmap, vx, vy);
   CAMLlocal1(vres);
 
-  FT_Bitmap bitmap = *Bitmap_val(vbitmap);
+  FT_Glyph glyph = *Glyph_val(vbitmap);
+
+  FT_BitmapGlyph bg = (FT_BitmapGlyph) glyph;
+
+  FT_Bitmap bitmap = bg->bitmap;
   unsigned char* row;
 
   int x = Int_val(vx);

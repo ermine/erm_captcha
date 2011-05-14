@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 59021e3a9ba223b31546178f29b95a29) *)
+(* DO NOT EDIT (digest: 5239ce9b199157956b139e0e6de0fe93) *)
 module OASISGettext = struct
 # 21 "/usr/home/ermine/projects/ocaml/src/oasis/src/oasis/OASISGettext.ml"
   
@@ -453,7 +453,14 @@ let package_default =
   {
      MyOCamlbuildBase.lib_ocaml = [("captcha", [])];
      lib_c = [("captcha", ".", [])];
-     flags = [];
+     flags =
+       [
+          (["oasis_library_captcha_ccopt"; "compile"],
+            [
+               (OASISExpr.EBool true,
+                 S [A "-ccopt"; A "-O0"; A "-ccopt"; A "-ggdb"])
+            ])
+       ];
      }
   ;;
 

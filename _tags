@@ -5,16 +5,23 @@
 
 true: debug
 # OASIS_START
-# DO NOT EDIT (digest: 0029906ec9b07b2b968f18009368e481)
+# DO NOT EDIT (digest: 08ea8b4a878f28983c902651317c9c8c)
 # Library captcha
+<*.ml{,i}>: oasis_library_captcha_ccopt
+"freetype2_stub.c": oasis_library_captcha_ccopt
 <captcha.{cma,cmxa}>: use_libcaptcha
 "freetype2_stub.c": pkg_camlimages
 # Executable captcha_stdout
 <captcha_stdout.{native,byte}>: use_captcha
 <captcha_stdout.{native,byte}>: pkg_camlimages.png
 <captcha_stdout.{native,byte}>: pkg_camlimages
+<captcha_stdout.{native,byte}>: custom
+# Executable test
+<test.{native,byte}>: use_captcha
+<test.{native,byte}>: pkg_camlimages.png
+<test.{native,byte}>: pkg_camlimages
 <*.ml{,i}>: use_captcha
 <*.ml{,i}>: pkg_camlimages.png
 <*.ml{,i}>: pkg_camlimages
-<captcha_stdout.{native,byte}>: custom
+<test.{native,byte}>: custom
 # OASIS_STOP

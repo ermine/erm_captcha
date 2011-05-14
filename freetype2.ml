@@ -1,7 +1,6 @@
 type library
 type face
 type glyph
-type bitmap
 
 type vector = {
   x : int;
@@ -14,7 +13,7 @@ type bitmap_glyph = {
   width : int;
   height : int;
   advance : vector;
-  bitmap : bitmap
+  bitmap : glyph;
 }
 
 type matrix = {
@@ -105,7 +104,7 @@ type bbox_mode =
 external glyph_get_cbox : glyph -> bbox_mode -> bbox
   = "ml_glyph_get_cbox"
 
-external read_bitmap : bitmap -> int -> int -> int
+external read_bitmap : glyph -> int -> int -> int
   = "ml_read_bitmap"
 
 external glyph_done : glyph -> unit

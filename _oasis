@@ -16,7 +16,7 @@ Library captcha
   Modules:    Freetype2, Captcha
   InternalModules: Captcha_font
   CSources:   freetype2_stub.c
-  # CCopt:     -O0 -ggdb
+  CCopt:     -O0 -ggdb
   BuildDepends:	camlimages
 
 Executable captcha_stdout
@@ -27,4 +27,11 @@ Executable captcha_stdout
   CompiledObject: best
   BuildDepends:	captcha, camlimages.png
 
+Executable test
+   Path: .
+  Install: false
+  MainIs: test.ml
+  Custom: true
+  CompiledObject: best
+  BuildDepends:	captcha, camlimages.png
 

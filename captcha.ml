@@ -4,9 +4,6 @@
 
 open Freetype2
 
-let _ =
-  Printexc.record_backtrace true
-
 let font_hres = 300
 let font_vres = 300
 let font_hor_size = 8 lsl 6
@@ -16,8 +13,6 @@ let image_width = 140
 let image_height = 60
 
 let max_whirl_angle = 0.7
-
-let cache = Hashtbl.create 10
 
 let white = {Color.Rgb.r = 255; g = 255; b = 255; }
 let black = {Color.Rgb.r = 0; g = 0; b = 0}
@@ -32,9 +27,7 @@ let rand_int min max =
   Random.int (max - min + 1) + min
 
 
-let transform_glyph c =
-  let glyph_orig = Hashtbl.find cache c in
-  let glyph = glyph_copy glyph_orig in
+let transform_glyph glyph =
   let () = (* whirl *)
     let matrix = make_rotation
       (if Random.bool () then
@@ -64,7 +57,7 @@ let transform_glyph c =
         glyph_transform glyph matrix {x = 0; y = 0} in
       
   let bbox = glyph_get_cbox glyph FT_GLYPH_BBOX_PIXELS in
-    (glyph, bbox.xMax - bbox.xMin, bbox.yMax - bbox.yMin)
+    (bbox.xMax - bbox.xMin, bbox.yMax - bbox.yMin)
 
 
 let draw_black_wave img start_x length height =
@@ -115,7 +108,8 @@ let draw_char img bitmap_glyph penx =
     if bitmap_glyph.height >= image_height then
       (image_height - bitmap_glyph.height) / 2 + bitmap_glyph.height - 1
     else
-      Random.int (image_height - bitmap_glyph.height) + bitmap_glyph.height - 1 in
+      Random.int (image_height - bitmap_glyph.height) + bitmap_glyph.height - 1
+  in
     for x = 0 to bitmap_glyph.width - 1 do
       for y = 0 to bitmap_glyph.height - 1 do
         let p = read_bitmap bitmap_glyph.bitmap x y in
@@ -133,16 +127,12 @@ let draw_char img bitmap_glyph penx =
     done
 
 
-let draw_string img width height str =
-  let len = String.length str in
-  let rec loop acc string_length string_height i =
-    if i < len then
-      let glyph, w, h = transform_glyph str.[i] in
-        loop (glyph :: acc) (string_length + w) (max string_height h) (succ i)
-    else
-      (List.rev acc, string_length, string_height)
-  in
-  let bmps, string_length, string_height = loop [] 0 0 0 in
+let draw_string glyphs img width height =
+  let string_length, string_height =
+    List.fold_left (fun (length, height) g ->
+      let w, h = transform_glyph g in
+        (length + w, max height h)
+    ) (0, 0) glyphs in
   let start_x = (width - string_length) / 2 in
   let rec loop penx = function
     | [] -> ()
@@ -151,11 +141,10 @@ let draw_string img width height str =
         {x = 0; y = 0} false in
         draw_char img bitmap_glyph penx;
         let newpenx = penx + bitmap_glyph.width - 1 in
-          (* draw_line img newpenx peny; *)
-          glyph_done glyph;
+          glyph_done bitmap_glyph.bitmap;
           loop newpenx glyphs
   in
-    loop start_x bmps;
+    loop start_x glyphs;
 
     draw_black_wave img start_x string_length string_height;
 
@@ -166,15 +155,20 @@ let draw_string img width height str =
     
 
 let generate_image face string =
-  String.iter (fun c ->
-    if not (Hashtbl.mem cache c) then
-      let idx = get_char_index face (Char.code c) in
+  let len = String.length string in
+  let rec get_glyphs acc i =
+    if i < len then
+      let idx = get_char_index face (Char.code string.[i]) in
         load_glyph face idx [FT_LOAD_DEFAULT];
         let glyph = get_glyph face in
-          Hashtbl.add cache c glyph
-  ) string;
+          get_glyphs (glyph :: acc) (succ i)
+    else
+      List.rev acc
+  in
+  let glyphs = get_glyphs [] 0 in
   let img = Rgb24.make image_width image_height white in
-    draw_string img image_width image_height string;
+    draw_string glyphs img image_width image_height;
+    List.iter (fun g -> glyph_done g) glyphs;
     img
 
 
