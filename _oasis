@@ -1,17 +1,18 @@
-OASISFormat: 0.2
-Name:        Captcha
-Version:     0.1
+OASISFormat: 0.3
+Name:        erm_captcha
+Version:     0.2
 Authors:     Anastasia Gornostaeva
-Copyrights:  (C) 2011 Anastasia Gornostaeva
+Copyrights:  (C) 2012 Anastasia Gornostaeva
 License:     BSD3
 LicenseFile: LICENCE
-Plugins:     DevFiles (0.2), META (0.2)
+Plugins:     DevFiles (0.3), META (0.3)
 BuildTools:  ocamlbuild
 PostConfCommand: ocaml unix.cma postconfig.ml
+PostDistCleanCommand: $rm captcha_font.ml
 
 Synopsis:    CAPTCHA Image Generator
 
-Library captcha
+Library erm_captcha
   Path:       .
   Modules:    Freetype2, Captcha
   InternalModules: Captcha_font

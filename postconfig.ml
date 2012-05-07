@@ -86,7 +86,31 @@ let check_pkg_config () =
     Printf.printf "%s\n" (string_of_bool r);
     r
   
+let read_font font =
+  let fin = open_in font in
+  let out = open_out "captcha_font.ml" in
+  let buf = String.create 8192 in
+  let rec loop () =
+    let size = input fin buf 0 8192 in
+      if size = 8192 then (
+        output_string out (String.escaped buf);
+        loop ()
+      ) else if size > 0 then (
+        output_string out (String.escaped (String.sub buf 0 size));
+        loop ()
+      ) else
+        ()
+  in
+    output_string out "let font = \"";
+    loop ();
+    output_string out "\"";
+    close_in fin;
+    close_out out
+
 let _ =
+  print_string "Path to TTF font file and its name: ";
+  let font = read_line () in
+  let () = read_font font in
   let libs =
     [true, "freetype2", "ft2build.h", "-lfreetype"]
   in
