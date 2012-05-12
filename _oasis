@@ -26,7 +26,7 @@ Executable captcha_stdout
   MainIs:	captcha_stdout.ml
   Custom:	true # [FORGE#834]
   CompiledObject: best
-  BuildDepends:	captcha, camlimages.png
+  BuildDepends:	erm_captcha, camlimages.png
 
 Executable test
    Path: .
@@ -34,5 +34,5 @@ Executable test
   MainIs: test.ml
   Custom: true
   CompiledObject: best
-  BuildDepends:	captcha, camlimages.png
+  BuildDepends:	erm_captcha, camlimages.png
 
