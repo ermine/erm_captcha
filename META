@@ -1,12 +1,12 @@
 # OASIS_START
-# DO NOT EDIT (digest: 1c332569d839d8b84dc44628181967fd)
+# DO NOT EDIT (digest: d79f3ca7906c5e1e056c693cdb4023b8)
 version = "0.2"
 description = "CAPTCHA Image Generator"
 requires = "camlimages"
-archive(byte) = "erm_captcha.cma"
-archive(byte, plugin) = "erm_captcha.cma"
-archive(native) = "erm_captcha.cmxa"
-archive(native, plugin) = "erm_captcha.cmxs"
-exists_if = "erm_captcha.cma"
+archive(byte) = "erm_captcha-lib.cma"
+archive(byte, plugin) = "erm_captcha-lib.cma"
+archive(native) = "erm_captcha-lib.cmxa"
+archive(native, plugin) = "erm_captcha-lib.cmxs"
+exists_if = "erm_captcha-lib.cma"
 # OASIS_STOP
 

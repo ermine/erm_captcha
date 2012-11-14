@@ -1,11 +1,11 @@
 <freetype2_stub.c>: pkg_freetype2_cflags
 <*.a>: pkg_freetype2_lflags, ocamlmklib
-<erm_captcha.cm{x,}a>: pkg_freetype2_lflags
+<erm_captcha-lib.{cma,cmx,cmxa,cmxs}>:pkg_freetype2_lflags
 
 
 true: debug
 # OASIS_START
-# DO NOT EDIT (digest: e4acc4616fcfbb62b2c5c210e2e86fae)
+# DO NOT EDIT (digest: 5c5b764656cd75e2912ca1c09c3d1a8b)
 # Ignore VCS directories, you can use the same kind of rule outside 
 # OASIS_START/STOP if you want to exclude directories that contains 
 # useless stuff for the build process
@@ -19,22 +19,22 @@ true: debug
 ".git": not_hygienic
 "_darcs": -traverse
 "_darcs": not_hygienic
-# Library erm_captcha
-"erm_captcha.cmxs": use_erm_captcha
-<*.ml{,i}>: oasis_library_erm_captcha_ccopt
-"freetype2_stub.c": oasis_library_erm_captcha_ccopt
-<erm_captcha.{cma,cmxa}>: use_liberm_captcha_stubs
+# Library erm_captcha-lib
+"erm_captcha-lib.cmxs": use_erm_captcha-lib
+<*.ml{,i}>: oasis_library_erm_captcha_lib_ccopt
+"freetype2_stub.c": oasis_library_erm_captcha_lib_ccopt
+<erm_captcha-lib.{cma,cmxa}>: use_liberm_captcha-lib_stubs
 "freetype2_stub.c": pkg_camlimages
 # Executable captcha_stdout
-<captcha_stdout.{native,byte}>: use_erm_captcha
+<captcha_stdout.{native,byte}>: use_erm_captcha-lib
 <captcha_stdout.{native,byte}>: pkg_camlimages.png
 <captcha_stdout.{native,byte}>: pkg_camlimages
 <captcha_stdout.{native,byte}>: custom
 # Executable test
-<test.{native,byte}>: use_erm_captcha
+<test.{native,byte}>: use_erm_captcha-lib
 <test.{native,byte}>: pkg_camlimages.png
 <test.{native,byte}>: pkg_camlimages
-<*.ml{,i}>: use_erm_captcha
+<*.ml{,i}>: use_erm_captcha-lib
 <*.ml{,i}>: pkg_camlimages.png
 <*.ml{,i}>: pkg_camlimages
 <test.{native,byte}>: custom

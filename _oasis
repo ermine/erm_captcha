@@ -12,8 +12,9 @@ PostDistCleanCommand: $rm captcha_font.ml
 
 Synopsis:    CAPTCHA Image Generator
 
-Library erm_captcha
+Library "erm_captcha-lib"
   Path:       .
+  FindlibName: erm_captcha
   Modules:    Freetype2, Captcha
   InternalModules: Captcha_font
   CSources:   freetype2_stub.c
